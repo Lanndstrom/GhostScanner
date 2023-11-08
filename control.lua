@@ -41,6 +41,7 @@ local InvertSign = settings.global["ghost-scanner-negative-output"].value
 local RoundToStack = settings.global["ghost-scanner-round2stack"].value
 local ShowCellCount = settings.global["ghost-scanner-cell-count"].value
 local AreaReduction = settings.global["ghost-scanner-area-reduction"].value
+local AutoTurnOff = settings.global["ghost-scanner-autoturnoff"].value -- modded
 
 script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
   if event.setting == "ghost-scanner-update-interval" then
@@ -67,6 +68,11 @@ script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
   if event.setting == "ghost-scanner-area-reduction" then
     AreaReduction = settings.global["ghost-scanner-area-reduction"].value
   end
+  -- modded
+  if event.setting == "ghost-scanner-autoturnoff" then
+    AutoTurnOff = settings.global["ghost-scanner-autoturnoff"].value
+  end
+  -- /modded
 end)
 
 
@@ -412,11 +418,27 @@ function UpdateSensor(ghostScanner)
 
   -- set signals
   local signals = get_ghosts_as_signals(logisticNetwork)
+
+  --modded
+  -- turn off if no ghosts detected
+  if AutoTurnOff then
+    if next(signals) == nil then
+     local control = ghostScanner.entity.get_or_create_control_behavior()
+     control.enabled = not control.enabled -- toggle off
+     --game.print("I am empty" .. ghostScanner.ID)
+    end
+   end
+   --/modded
+
+  -- continue setting signals
   if not signals then
     ghostScanner.entity.get_control_behavior().parameters = nil
     return
   end
   ghostScanner.entity.get_control_behavior().parameters = signals
+  -- Debug
+  --game.print("I have signals " .. ghostScanner.ID) -- modded
+  --game.print(serpent.block(signals)) -- modded 
 end
 
 end

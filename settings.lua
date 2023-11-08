@@ -53,4 +53,11 @@ data:extend({
     minimum_value = 0.0,
     maximum_value = 0.1,
   },
+  {
+    type = "bool-setting",
+    name = "ghost-scanner-autoturnoff",
+    order = "be",
+    setting_type = "runtime-global",
+    default_value = false,
+  },
 })
